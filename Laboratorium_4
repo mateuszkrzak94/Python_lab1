@@ -1,0 +1,68 @@
+
+
+from sklearn.cluster import KMeans
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import fetch_openml
+
+import matplotlib.pyplot as plt
+
+
+# Zadanie 1
+# Poniżej przy pomocy funkcji fetch_openml można zaimportować zbiór danych o samochodach
+# Zapoznaj się ze zbiorem danych (zwizualizuj wybrane przez siebie cechy) a następnie podziel go na zbiór uczący i testowy
+# Wytrenuj klasyfikator KMeans z zadaną przez siebie liczbą klas i zwizualizuj wyniki predykcji na zbiorze testowym
+
+#Samochody
+
+# Przykładowy zbiór danych 
+samochody = fetch_openml('cars1')
+
+
+samochody.keys()
+
+samochody['feature_names']
+
+#Dzielimy zbiór na cechy oraz etykiety
+#3-konie mechaniczne
+#4-Predkosc do 60 mil
+X = samochody.data[:, [3, 5]]
+y = samochody.target
+
+#Zamiana typu na int
+y = [int(i) for i in y]
+
+#Podzielenia zbioru na zbiór uczący i zbiór testowy
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
+
+# Klasyfikator z trzema klastrami (klasami)
+kmn = KMeans(n_clusters=3)
+
+kmn.fit(X_train)
+
+centra = kmn.cluster_centers_
+
+fig, ax = plt.subplots(1, 2)
+
+ax[0].scatter(X_train[:, 0], X_train[:, 1], c=y_train, s=20)
+
+y_pred_train = kmn.predict(X_train)
+ax[1].scatter(X_train[:, 0], X_train[:, 1], c=y_pred_train, s=20)
+
+ax[1].scatter(centra[:, 0], centra[:, 1], c='red', s=50)
+plt.show()
+
+y_pred = kmn.predict(X_test)
+
+plt.scatter(X_test[:, 0], X_test[:, 1], c=y_pred, s=20)
+plt.scatter(centra[:, 0], centra[:, 1], c='red', s=50)
+plt.show()
+
+# Zadanie 2
+# Opisz własnymi słowami, jakie klasy samochodów wg Ciebie znalazły się w zbiorze
+
+#Zadanie 2
+# Zostały porównane 2 cechy konie mechaniczne i prędkosc do 60 mil. 
+#W zbiorze znajduje się najwięcej samochodów które mają od 60 do 120 koni, wyciągają
+# wtedy 60 w  13- 20 sekund. Czym samochód ma więcej koni mechanicznych tym szybciej wyciąga 60.
+# W zbiorze znajdują się w większosci samochody klasy sredniej
